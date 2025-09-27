@@ -28,9 +28,10 @@ user = get_user_model()
 # admin_site.register(Category)
 
 # admin_site.register(APIKey)
-
+from server import views
 
 urlpatterns = [
+    path('', views.home),
     path('admin/', admin.site.urls),
     path('api/blogs/', include("posts.urls"), name='blog_list'),
     path('api/auth/', include("accounts.urls"), name='auth_user'),

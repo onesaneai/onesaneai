@@ -27,6 +27,9 @@ from django.views.decorators.http import require_http_methods
 
 
 
+def home(request):
+    return JsonResponse({"status":"success"})
+
 @ensure_csrf_cookie
 @require_http_methods(["GET"])
 def get_csrf_token(request):

@@ -5,3 +5,5 @@ django-ckeditor
 django-otp
 qrcode
 djangorestframework
+django-cors-headers
+requests

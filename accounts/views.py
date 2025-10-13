@@ -1,18 +1,15 @@
 from django.shortcuts import render
-
-# Create your views here.
-import random,time
+from django.template.loader import render_to_string
+from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
-import json,random
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from .models import Profile,Contact
 from .serializers import ContactSerializer
-
+from .models import Profile,Contact
 from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,6 +19,9 @@ from django.contrib.auth import login
 from django.contrib.auth import logout
 from datetime import timedelta
 from rest_framework.exceptions import AuthenticationFailed
+
+import random,time,requests
+import json,random
 
 TOKEN_EXPIRATION_HOURS = 24  # token valid for 24 hours
 
@@ -52,21 +52,39 @@ def send_otp(request):
     
         if not email:
             return Response({"success": False, "message": "Email is required"})
+        
+        user = User.objects.filter(email=email, is_verified=True)
+        if user.exists():
+            name  = user[0].get_full_name().capitalize() or user[0].username
 
         otp = random.randint(100000, 999999)
         cache.set(f"otp_{email}", otp, timeout=90)  # 1.5 min expiry
 
-        send_mail(
-            subject="Your Login Code",
-            message=f"Your verification code is {otp}",
-            from_email="noreply@example.com",
-            recipient_list=[email],
-        )
+        send_otp_email(email, name, otp)
 
         return Response({"success": True, "message": "OTP sent to email"}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({"success": False, "error": "Failed to send OTP"})
+
+def send_otp_email(user_email,name, otp_code):
+    """Send OTP verification email"""
+    
+    # Render the HTML template
+    html_message = render_to_string('email_otp.html', {
+        'otp_code': otp_code,
+        'name': name
+    })
+    
+    # Send email
+    send_mail(
+        subject='Verify Your Email - Onesane AI',
+        message=f'Your verification code is: {otp_code}',  # Plain text fallback
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user_email],
+        html_message=html_message,
+        fail_silently=False,
+    )
 
 
 @api_view(["POST"])
@@ -120,23 +138,45 @@ def verify_otp(request):
         "token": token.key
     })
 
- 
+def verify_recaptcha(token):
+    # Verify token with Google
+    resp = requests.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        data={
+            "secret":'6LcovOgrAAAAAHR1q4BqkPv1EgJLiphsShDrH9jX',
+            "response": token,
+        },
+    )
+    result = resp.json()
+    print("The recaptcha result is : ",result)
+
+    if not result.get("success"):
+        return False
+    # You can also check the score if using reCAPTCHA v3
+    if result.get("score", 0) < 0.5:  # Adjust threshold as needed
+        return False
+
+    return True
+
 @csrf_exempt
 def save_contact(request):
-    print("The user info : ",request.body)
-    time.sleep(2)
+
     if request.method != 'POST':
         return JsonResponse({"success": False, 'error': 'Only POST method allowed.'}, status=405)
 
     data = json.loads(request.body)
-    serializer = ContactSerializer(data=data)
+    recaptcha_token = data.get('recaptcha_token')
+    if not verify_recaptcha(recaptcha_token):
+        return JsonResponse({'success': False, 'error': 'Invalid reCAPTCHA. Please try again.'}, status=400)
 
+    # Check if a contact with the same email and message already exists
+    serializer = ContactSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({'success': True, 'message': 'Contact saved successfully.'},status=200)
+
     else:
         return JsonResponse({'success': False, 'error':"You already filled in the form with the same details."}, status=400)
-    
 
 @csrf_exempt
 @api_view(["POST"])

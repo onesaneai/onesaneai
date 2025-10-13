@@ -63,8 +63,6 @@ class BlogPost(models.Model):
     
     meta_title = models.CharField(max_length=60, blank=True, help_text="SEO Title, max 60 characters.")
     meta_description = models.CharField(max_length=160, blank=True, help_text="SEO Description, max 160 characters.")
-    
-
 
     class Meta:
         ordering = ['-created_at']

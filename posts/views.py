@@ -47,6 +47,7 @@ class BlogPostsListAPIView(APIView):
     def get(self, request):
         blogs = BlogPost.objects.all().order_by('-created_at')
         serializer = BlogPostListSerializer(blogs, many=True)
+        print("Blog list serializer data:", serializer.data)
         return Response(serializer.data)
 
 

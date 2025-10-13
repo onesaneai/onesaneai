@@ -7,3 +7,4 @@ qrcode
 djangorestframework
 django-cors-headers
 requests
+Pillow

@@ -52,18 +52,16 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug']
 
 class BlogPostListSerializer(serializers.ModelSerializer):
-    read_time = serializers.IntegerField(read_only=True)
+    read_time = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
     category = CategorySerializer(read_only=True)
     featured_image = serializers.ImageField(read_only=True)
-    # Serialize tags as list of names
     tags = serializers.SlugRelatedField(
         many=True,
         read_only=True,
         slug_field='name'
     )
-    user = UserSerializer(source='author', read_only=True)  # <— Added here
-
+    user = UserSerializer(source='author', read_only=True)
 
     class Meta:
         model = BlogPost
@@ -72,13 +70,19 @@ class BlogPostListSerializer(serializers.ModelSerializer):
             "comments_count", "slug", "status",
             "featured_image", "tags", "allow_comments", "published",
             "read_time", "created_at", "updated_at",
-            "meta_title", "meta_description",'user',
+            "meta_title", "meta_description", 'user',
         ]
 
-    def get_comments_count(self, obj):
-        # Use comment_set if Comment model has no related_name
-        return obj.comments.filter(parent=None).count()
+    def get_read_time(self, obj):
+        page =  PageView.objects.filter(path__icontains=obj.slug).first()
+        if page:
+            read_time  = page.total_read_time
+            if read_time:
+                return read_time
+        return 0
 
+    def get_comments_count(self, obj):
+        return obj.comments.filter(parent=None).count()
 
 # For creating comments AND replies
 class CreateCommentSerializer(serializers.ModelSerializer):

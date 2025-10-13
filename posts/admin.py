@@ -16,5 +16,8 @@ admin.site.register(BlogPost, BlogPostAdmin)
 
 @admin.register(APIKey)
 class APIKeyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'key', 'is_active', 'created_at')
+    list_display = ('name', 'key',"permission", 'is_active', 'created_at')
     readonly_fields = ('key',)
+
+    def permission(self,obj):
+        return obj.permission

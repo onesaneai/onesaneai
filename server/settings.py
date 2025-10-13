@@ -12,10 +12,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from tkinter.ttk import Frame
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 import os
+
+
+# ========================== Quick-start development settings - unsuitable for production =========================
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -30,6 +34,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',  # <-- must be first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,7 +83,6 @@ CORS_ALLOWED_ORIGINS = [
 
 
 # CORS headers to allow external requests authentication
-from corsheaders.defaults import default_headers
 
 # Only add custom headers to the default list
 
@@ -244,3 +248,54 @@ AUTH_USER_MODEL = 'accounts.Profile'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Onesane Admin",
+    "site_header": "Onesane Admin Panel",
+    "site_brand": "Onesane",
+    "welcome_sign": "Welcome to the Onesane Admin Panel!",
+    "copyright": "Onesane AI Solutions",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+
+    # ✅ This is correct location
+    "user_avatar": "get_profile_image_url",  # ✅ THIS IS CORRECT
+    "site_icon": "images/favicon.png",     # For browser tab
+    "site_logo": "images/logo.png",        # For sidebar and top bar
+    "site_logo_classes": "img-circle",     # Optional: makes it rounded
+
+    "icons": {
+    # Accounts & Users
+    "accounts.Profile": "fas fa-user-circle",       # Custom user model
+    "accounts.Contact": "fas fa-envelope",          # Contacts
+    "accounts.User": "fas fa-users",                # If separate model
+
+    # Dashboard
+    "dashboard.Dashboard": "fas fa-tachometer-alt", # Dashboard
+
+    # Auth & Tokens
+    "auth.Group": "fas fa-users-cog",               # Groups
+    "authtoken.Token": "fas fa-key",                # Auth Token
+    "rest_framework.authtoken.Token": "fas fa-user-lock", # DRF Token, if used
+
+    # OTP Devices
+    "otp_static.StaticDevice": "fas fa-mobile-alt", # Static devices
+    "otp_totp.TOTPDevice": "fas fa-shield-alt",     # TOTP devices
+    "otp.OtpStatic": "fas fa-lock",                 # If separate OTP model
+
+    # Posts / Blog
+    "posts.BlogPost": "fas fa-blog",
+    "posts.Category": "fas fa-folder-open",
+    "posts.Comment": "fas fa-comments",
+    "posts.PageView": "fas fa-eye",
+
+    # Tags
+    "taggit.Tag": "fas fa-tags",                   # Tags
+
+    # API Keys
+    "posts.APIKey": "fas fa-key",  # DRF API keys
+},
+
+    # Theme
+    "theme": "darkly",
+}

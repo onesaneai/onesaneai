@@ -1,6 +1,6 @@
 # blog/serializers.py
 from rest_framework import serializers
-from .models import Comment, BlogView, PageView, BlogPost
+from .models import Comment, PageView, BlogPost
 
 
 # Existing serializers ...
@@ -104,12 +104,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError("Parent comment must be from the same blog")
         return value
 
-class BlogViewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BlogView
-        fields = ['id', 'blog', 'ip_address', 'user', 'viewed_at']
-        read_only_fields = ['viewed_at']
-
+ 
 class PageViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageView

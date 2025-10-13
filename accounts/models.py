@@ -43,7 +43,15 @@ class Profile(AbstractUser):
     REQUIRED_FIELDS = ['email']
  
     def __str__(self):
+        if self.first_name:
+            return f"{self.first_name} {self.last_name if self.last_name else ''}".strip()
         return self.username
+    
+
+    def get_profile_image_url(self):
+        if self.profile_image and hasattr(self.profile_image, 'url'):
+            return self.profile_image.url
+        return '/static/images/default_profile.png'  # Default image path
 
 
 def generate_random_string(length):

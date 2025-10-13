@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import BlogPost, BlogView, Comment, PageView,APIKey,Category
+from .models import BlogPost, Comment, PageView,APIKey,Category
 
-admin.site.register(BlogView)
 admin.site.register(Comment)
 admin.site.register(PageView)
 admin.site.register(Category)

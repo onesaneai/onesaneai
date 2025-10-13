@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from PIL import Image
-import os,json
+import os,json,requests
 
 # Create your models here.
 from django.utils.crypto import get_random_string
@@ -91,15 +91,6 @@ class BlogPost(models.Model):
     def __str__(self):
         return self.title
 
-class BlogView(models.Model):
-    blog = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='views')
-    ip_address = models.GenericIPAddressField()
-    user = models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True)
-
-    viewed_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.blog.title} - {self.ip_address}"
 
 class Comment(models.Model):
     blog = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='comments')
@@ -114,8 +105,6 @@ class Comment(models.Model):
     def __str__(self):
         return f"Comment by {self.user} on {self.blog}"
 
-
-import requests
 
 def get_location_from_ip(ip):
     """Fetch city, region, and country for an IP using ip-api."""

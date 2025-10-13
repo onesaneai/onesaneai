@@ -10,11 +10,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.utils.timezone import now
-from .models import Comment, BlogView, PageView, BlogPost,get_location_from_ip
+from .models import Comment, PageView, BlogPost,get_location_from_ip
 from accounts.models import Profile
 from .serializers import (
     CommentSerializer,
-    BlogViewSerializer,
     PageViewSerializer,
     BlogReadTimeSerializer,
     BlogPostListSerializer,

@@ -7,6 +7,14 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
+# ========================== Update admin pannel  ====================================================
+# onesaneai/admin.py or yourapp/admin.py
+admin.site.site_header = "Onesane Admin Panel"
+admin.site.site_title = "Onesane Admin"
+admin.site.index_title = "Welcome to the Onesane Admin Panel"
+
+
+# Profile model admin
 @admin.register(Profile)
 class ProfileAdmin(BaseUserAdmin):
     model = Profile
@@ -38,6 +46,7 @@ class ProfileAdmin(BaseUserAdmin):
 
     search_fields = ['email', 'username']
 
+# Contact model admin
 class ContactAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'email', 'company', 'service']
     search_fields = ['first_name', 'last_name', 'email', 'company', 'service']

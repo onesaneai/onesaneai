@@ -20,7 +20,7 @@ from django.contrib.auth import logout
 from datetime import timedelta
 from rest_framework.exceptions import AuthenticationFailed
 
-import random,time,requests
+import random,time,requests,uuid
 import json,random
 
 TOKEN_EXPIRATION_HOURS = 24  # token valid for 24 hours
@@ -173,10 +173,65 @@ def save_contact(request):
     serializer = ContactSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+        send_contact_form_notification(serializer.data)
+
         return JsonResponse({'success': True, 'message': 'Contact saved successfully.'},status=200)
 
     else:
         return JsonResponse({'success': False, 'error':"You already filled in the form with the same details."}, status=400)
+
+
+def send_contact_form_notification(form_data):
+    """Send contact form submission notification to admin"""
+    try:
+        # Generate unique submission ID
+        submission_id = str(uuid.uuid4())[:8].upper()
+        
+        # Context for email template
+        context = {
+            'first_name': form_data.get('first_name', ''),
+            'last_name': form_data.get('last_name', ''),
+            'email': form_data.get('email', ''),
+            'company': form_data.get('company', 'Not provided'),
+            'service_interested': form_data.get('service', 'Not specified'),
+            'message': form_data.get('message', ''),
+            'submission_date': timezone.now().strftime('%B %d, %Y at %I:%M %p'),
+            'submission_id': submission_id,
+        }
+        
+        # Render HTML template
+        html_message = render_to_string('email_contact.html', context)
+        
+        # Plain text version
+        plain_message = f"""
+        New Contact Form Submission
+        
+        Name: {context['first_name']} {context['last_name']}
+        Email: {context['email']}
+        Company: {context['company']}
+        Service: {context['service_interested']}
+        
+        Message:
+        {context['message']}
+        
+        Submission ID: #{submission_id}
+        Date: {context['submission_date']}
+        """
+        
+        # Send to admin(s)
+        send_mail(
+            subject=f'🔔 New Contact Form - {context["first_name"]} {context["last_name"]} ({context["service_interested"]})',
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],  # or settings.ADMINS
+            html_message=html_message,
+            fail_silently=False,
+        )
+        
+        return submission_id
+    except Exception as e:
+        print("Failed to send contact form email:", str(e))
+        return None
 
 @csrf_exempt
 @api_view(["POST"])

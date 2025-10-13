@@ -227,7 +227,6 @@ CKEDITOR_CONFIGS = {
 }
 
 
-
 # Email configurations : 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -236,6 +235,7 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = 'hackingkali789@gmail.com'  # Replace with your email
 EMAIL_HOST_PASSWORD = 'zoik tvac dvxi fwuq'  # Use an App Password (not your real password)
+ADMIN_EMAIL = 'monusainideveloper@gmail.com'  # Where contact form messages are sent
 
 # Default email sender
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contact Form Submission - Onesane AI</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0e27; color: #ffffff;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0e27;">
+        <tr>
+            <td >
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 30px 40px; background: linear-gradient(135deg, #00bfff 0%, #0080ff 100%); text-align: center;">
+                            <h1 style="margin: 0; font-size: 26px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 1px;">
+                                📬 New Contact Form Submission
+                            </h1>
+                            <p style="margin: 10px 0 0; font-size: 14px; color: rgba(255, 255, 255, 0.9);">
+                                {{ submission_date }}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Alert Badge -->
+                    <tr>
+                        <td style="padding: 20px 40px 0;">
+                            <div style="display: inline-block; padding: 8px 16px; background: rgba(0, 191, 255, 0.15); border: 1px solid rgba(0, 191, 255, 0.4); border-radius: 20px;">
+                                <span style="color: #00bfff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">🔔 New Lead</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Contact Information -->
+                    <tr>
+                        <td style="padding:15px;">
+                            <h2 style="margin: 0 0 25px; font-size: 20px; font-weight: 600; color: #00bfff; border-bottom: 2px solid rgba(0, 191, 255, 0.3); padding-bottom: 10px;">
+                                Contact Information
+                            </h2>
+
+                            <!-- Info Grid -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td width="50%" style="padding: 15px 20px 15px 0; vertical-align: top;">
+                                        <div style="background: rgba(0, 191, 255, 0.05); padding: 20px; border-radius: 8px; border-left: 3px solid #00bfff;">
+                                            <p style="margin: 0 0 8px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">First Name</p>
+                                            <p style="margin: 0; font-size: 16px; color: #ffffff; font-weight: 500;">{{ first_name }}</p>
+                                        </div>
+                                    </td>
+                                    <td width="50%" style="padding: 15px 0 15px 20px; vertical-align: top;">
+                                        <div style="background: rgba(0, 191, 255, 0.05); padding: 20px; border-radius: 8px; border-left: 3px solid #00bfff;">
+                                            <p style="margin: 0 0 8px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Last Name</p>
+                                            <p style="margin: 0; font-size: 16px; color: #ffffff; font-weight: 500;">{{ last_name }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Email -->
+                            <div style="margin-top: 15px; background: rgba(0, 191, 255, 0.05); padding: 20px; border-radius: 8px; border-left: 3px solid #00bfff;">
+                                <p style="margin: 0 0 8px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">📧 Email Address</p>
+                                <p style="margin: 0; font-size: 16px; font-weight: 500;">
+                                    <a href="mailto:{{ email }}" style="color: #00bfff; text-decoration: none;">{{ email }}</a>
+                                </p>
+                            </div>
+
+                            <!-- Company -->
+                            <div style="margin-top: 15px; background: rgba(0, 191, 255, 0.05); padding: 20px; border-radius: 8px; border-left: 3px solid #00bfff;">
+                                <p style="margin: 0 0 8px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">🏢 Company</p>
+                                <p style="margin: 0; font-size: 16px; color: #ffffff; font-weight: 500;">{{ company }}</p>
+                            </div>
+
+                            <!-- Service Interested -->
+                            <div style="margin-top: 15px; background: rgba(124, 58, 237, 0.1); padding: 20px; border-radius: 8px; border-left: 3px solid #7c3aed;">
+                                <p style="margin: 0 0 8px; font-size: 12px; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">🎯 Service Interested In</p>
+                                <p style="margin: 0; font-size: 17px; color: #c4b5fd; font-weight: 600;">{{ service_interested }}</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Message Section -->
+                    <tr>
+                        <td style="padding: 0 40px 40px;">
+                            <h2 style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #00bfff; border-bottom: 2px solid rgba(0, 191, 255, 0.3); padding-bottom: 10px;">
+                                Message
+                            </h2>
+                            <div style="background: rgba(0, 191, 255, 0.05); padding: 25px; border-radius: 8px; border: 1px solid rgba(0, 191, 255, 0.2);">
+                                <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #cbd5e0; white-space: pre-wrap;">{{ message }}</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Action Buttons -->
+                    <tr>
+                        <td style="padding: 0 40px 40px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td width="48%" style="padding-right: 2%;">
+                                        <a href="mailto:{{ email }}?subject=Re: Your Inquiry - Onesane AI" style="display: block; padding: 15px 25px; background: linear-gradient(135deg, #00bfff 0%, #0080ff 100%); color: #ffffff; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                                            📧 Reply to Lead
+                                        </a>
+                                    </td>
+                                    <td width="48%" style="padding-left: 2%;">
+                                        <a href="tel:{{ email }}" style="display: block; padding: 15px 25px; background: rgba(0, 191, 255, 0.15); border: 2px solid rgba(0, 191, 255, 0.4); color: #00bfff; text-decoration: none; text-align: center; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                                            📋 View in CRM
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Quick Stats -->
+                    <tr>
+                        <td style="padding: 25px 40px; background: rgba(0, 0, 0, 0.3); border-top: 1px solid rgba(0, 191, 255, 0.1);">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td width="33%" style="text-align: center; padding: 10px;">
+                                        <p style="margin: 0 0 5px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Submission ID</p>
+                                        <p style="margin: 0; font-size: 16px; color: #00bfff; font-weight: 600;">#{{ submission_id }}</p>
+                                    </td>
+                                    <td width="34%" style="text-align: center; padding: 10px; border-left: 1px solid rgba(0, 191, 255, 0.1); border-right: 1px solid rgba(0, 191, 255, 0.1);">
+                                        <p style="margin: 0 0 5px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Priority</p>
+                                        <p style="margin: 0; font-size: 16px; color: #ffc107; font-weight: 600;">High</p>
+                                    </td>
+                                    <td width="33%" style="text-align: center; padding: 10px;">
+                                        <p style="margin: 0 0 5px; font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Status</p>
+                                        <p style="margin: 0; font-size: 16px; color: #4ade80; font-weight: 600;">New</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 25px 40px; background: rgba(0, 0, 0, 0.4); border-top: 1px solid rgba(0, 191, 255, 0.1); text-align: center;">
+                            <p style="margin: 0; font-size: 12px; color: #718096; line-height: 1.6;">
+                                This is an automated notification from your Onesane AI contact form.<br>
+                                Please respond to the lead within 24 hours for best conversion rates.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+                <!-- Footer Note -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 700px; margin: 20px auto 0;">
+                    <tr>
+                        <td style="text-align: center; padding: 0 20px;">
+                            <p style="margin: 0; font-size: 11px; color: #4a5568;">
+                                © 2025 Onesane AI. All rights reserved. | Admin Dashboard
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

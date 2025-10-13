@@ -264,6 +264,10 @@ JAZZMIN_SETTINGS = {
     "site_logo": "images/logo.png",        # For sidebar and top bar
     "site_logo_classes": "img-circle",     # Optional: makes it rounded
 
+    # custom csss
+    "custom_css": "css/custom.css",  # path is relative to /static/
+
+
     "icons": {
     # Accounts & Users
     "accounts.Profile": "fas fa-user-circle",       # Custom user model

@@ -8,6 +8,8 @@ class APIKeyMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        response = self.get_response(request)
+        return response
         # Skip OPTIONS requests
         if request.method == 'OPTIONS':
             return self.get_response(request)

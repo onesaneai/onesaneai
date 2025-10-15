@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'posts',
     'accounts',
+    'invoices',
+    'mathfilters',
     'corsheaders',
     'taggit',
     'ckeditor',
@@ -303,3 +305,6 @@ JAZZMIN_SETTINGS = {
     # Theme
     "theme": "darkly",
 }
+
+
+LOGIN_URL = '/admin/login/'

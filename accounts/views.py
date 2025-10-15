@@ -5,11 +5,9 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from .serializers import ContactSerializer
-from .models import Profile,Contact
 from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework import status
@@ -129,7 +127,6 @@ def verify_otp(request):
         "success": True,
         "message": "Login successful",
         "user": {
-
             "id": user.id,
             "username": user.username,
             "email": user.email,
@@ -283,3 +280,4 @@ def logout_view(request):
         return JsonResponse({"success": True})
     except Exception as r:
         return JsonResponse({"success": False, "error": str(r)})
+

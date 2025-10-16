@@ -4,6 +4,10 @@ from .views import send_otp,save_contact,verify_otp,current_user,logout_view
 
 # from django.contrib.auth import get_user_model
 # user = get_user_model()
+from .forms import CustomAdminAuthenticationForm
+
+# Override the default admin login view to use our form
+admin.site.login_form = CustomAdminAuthenticationForm
 # 
 
 urlpatterns = [

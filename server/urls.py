@@ -9,29 +9,12 @@ from posts.models import BlogPost, Comment, PageView,APIKey,Category
 from django.contrib.auth import get_user_model
 user = get_user_model()
 
-# from django_otp.admin import OTPAdminSite
-# from django_otp.plugins.otp_totp.models import TOTPDevice
-# from django_otp.plugins.otp_totp.admin import TOTPDeviceAdmin
-
-# class OTPAdmin (OTPAdminSite):
-#     pass
-
-# admin_site =OTPAdmin(name='OTPAdmin')
-# admin_site.register(user)
-# admin_site.register (TOTPDevice, TOTPDeviceAdmin)
-
-# # Register your other models
-# admin_site.register(BlogPost)
-# admin_site.register(Comment)
-# admin_site.register(PageView)
-# admin_site.register(BlogView)
-# admin_site.register(Category)
 
 # admin_site.register(APIKey)
-from server import views
+from accounts.forms import CustomAdminAuthenticationForm
+admin.site.login_form = CustomAdminAuthenticationForm
 
 urlpatterns = [
-    path('', views.home),
     path('admin/', admin.site.urls),
     path('api/blogs/', include("posts.urls"), name='blog_list'),
     path('api/auth/', include("accounts.urls"), name='auth_user'),

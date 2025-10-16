@@ -74,7 +74,6 @@ def share_invoice_view(request, invoice_number):
 
         invoice = get_object_or_404(Invoice, invoice_number=invoice_number)
 
-
         username = invoice.client.email.split('@')[0]
         email = invoice.client.email
         first_name = invoice.client.company_name.split(' ')[0]
@@ -111,9 +110,9 @@ def send_otp_view(request, invoice_number):
             otp = str(random.randint(100000, 999999))  # In production, generate a random OTP and store it securely
 
             otp = random.randint(100000, 999999)
-            cache.set(f"otp_{client_email}", 101010, timeout=90)  # 1.5 min expiry
+            cache.set(f"otp_{client_email}", otp, timeout=90)  # 1.5 min expiry
 
-            # send_otp_email(client_email, invoice.client.company_name, otp)
+            send_otp_email(client_email, invoice.client.company_name, otp)
 
             return JsonResponse({"success": True, "message": "OTP sent to your email."})
         else:

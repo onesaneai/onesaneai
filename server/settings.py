@@ -49,9 +49,6 @@ INSTALLED_APPS = [
     'taggit',
     'ckeditor',
     'ckeditor_uploader',  # Optional, for uploading images
-    'django_otp',
-    'django_otp.plugins.otp_totp',  # For TOTP
-    'django_otp.plugins.otp_static',  # Backup codes
     'rest_framework',
     'rest_framework.authtoken',
     # 'two_factor',  # Uncomment if you want to use the full two-factor auth app
@@ -66,27 +63,17 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'posts.middleware.APIKeyMiddleware',  # Add this before authentication middleware
 ]
 
 ROOT_URLCONF = 'server.urls'
+# Optional: session settings
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 day
+SESSION_COOKIE_HTTPONLY = True       # Prevent JS access
 
 # ============ Custom Setting ===========================================================================================
-
-# CORS to allow external requests
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    'https://c60eb04aa997.ngrok-free.app'
-]
-
-
-# CORS headers to allow external requests authentication
-
-# Only add custom headers to the default list
 
 # CORS headers to allow external requests authentication
 CUSTOM_CORS_ALLOW_HEADERS = [
@@ -109,6 +96,7 @@ CORS_ALLOW_CREDENTIALS = True  # Essential for CSRF
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    'https://onesane.vercel.app',
 ]
 
 # Rest Framework configurations for OTP Catche

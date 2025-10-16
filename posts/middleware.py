@@ -9,9 +9,11 @@ class APIKeyMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        return response
+
+        print(request.path)
+        
         # Skip OPTIONS requests
-        if request.method == 'OPTIONS':
+        if request.method == 'OPTIONS' or "/api/invoices" in request.path:
             return self.get_response(request)
 
         if request.path.startswith('/api/'):

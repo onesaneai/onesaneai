@@ -2,7 +2,6 @@ django
 django-taggit
 Pillow
 django-ckeditor
-django-otp
 qrcode
 djangorestframework
 django-cors-headers

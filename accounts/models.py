@@ -5,6 +5,7 @@ from django.db import models
 import hashlib
 import random
 import string
+import pyotp
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username=None, email=None, password=None, **extra_fields):
@@ -41,17 +42,37 @@ class Profile(AbstractUser):
     # auth_token = models.CharField(max_length=255, blank=True, null=True)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
- 
+
+    # ... your existing fields ...
+    is_2fa_enabled = models.BooleanField(default=False)
+    totp_secret = models.CharField(max_length=1000, blank=True, null=True)
+
     def __str__(self):
         if self.first_name:
             return f"{self.first_name} {self.last_name if self.last_name else ''}".strip()
         return self.username
     
+    def generate_totp_secret(self):
+        if not self.totp_secret:
+            self.totp_secret = pyotp.random_base32()
+            self.save()
+        return self.totp_secret
 
+    def get_totp_uri(self):
+        self.generate_totp_secret()
+        return f"otpauth://totp/MyProject:{self.username}?secret={self.totp_secret}&issuer=MyProject"
+ 
     def get_profile_image_url(self):
         if self.profile_image and hasattr(self.profile_image, 'url'):
             return self.profile_image.url
         return '/static/images/default_profile.png'  # Default image path
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.is_2fa_enabled:
+            self.generate_totp_secret()
+        else:
+            self.totp_secret = ""
+        return super().save(force_insert, force_update, using, update_fields)
 
 
 def generate_random_string(length):

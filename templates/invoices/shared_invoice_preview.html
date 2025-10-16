@@ -354,10 +354,7 @@
             </div>
             <div class="d-flex amount-due-row">
                 <div class="me-auto">
-                    <a type="button" role="button" class="btn btn-outline-light disabled paynow-btn d-none">
-                        Pay Now &rarr;
-                        <span>Comming Soon...</span>
-                    </a>
+                    <a type="button" role="button" class="btn btn-outline-light {% if invoice.balance_due <= 0 %} d-none {% endif %} paynow-btn disabled">Pay Now 💳</a>
                 </div>
                 <div>
                     <span class="amount-due-label">AMOUNT DUE</span>
@@ -568,9 +565,11 @@
             document.querySelector('.paynow-btn').classList.remove('d-none')
         }
 
-        function downloadInvoice() {
+        async function downloadInvoice() {
             let element = document.querySelector(".invoice-container");
-            html2pdf().from(element).save(document.title);
+            document.querySelector(".paynow-btn").classList.add("d-none");
+            await html2pdf().from(element).save(document.title);
+            document.querySelector(".paynow-btn").classList.remove("d-none");
         }
        
     </script>

@@ -1,0 +1,13 @@
+django
+django-taggit
+Pillow
+django-summernote
+qrcode
+djangorestframework
+django-cors-headers
+requests
+Pillow
+django-jazzmin
+django-mathfilters
+pyotp
+django-ckeditor

@@ -1,0 +1,120 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Log in' %}{% endblock %}
+
+{% block content %}
+<div id="content-main" class="login-container">
+  <h1>{{ title }}</h1>
+
+  <style>
+    .errornote{
+        color: orange;
+        border-left: 2px solid orange;
+        padding: 10px 5px;
+        margin: 3px 0px;
+    }
+    h1{
+      text-align: center;
+      color: orange;
+      font-size: 4rem;
+    }
+    .login-container{
+      box-shadow: 0 0 3px rgb(186, 186, 186);
+      border: 1px solid rgb(185, 185, 185);
+      padding: 20px;
+      border-radius: 20px;
+      margin: 20px auto;
+      width: 100%;
+      max-width: 450px;
+    }
+    .login-container .form-row{
+      margin: 20px 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-row input{
+      border-radius: 5px;
+      outline: none;
+      border: 1px solid rgba(149, 149, 149, 0.684);
+      height: 40px;
+      font-size: 18px;
+      padding-left: 10px;
+    }
+    .form-row input:active,.form-row input:focus{
+      border: 1px solid orange;
+    }
+    .form-row label{
+      color: rgba(255, 166, 0, 0.86);
+    }
+
+    .submit-row{
+      text-align: center;
+    }
+    .submit-row input{
+      width: 70%;
+      margin: 10px auto;
+      padding: 5px;
+      border-radius: 10px;
+      outline: none;
+      border: none;
+      background-color:orange;
+      color: white;
+      font-size: 20px;
+    }
+    .submit-row input:hover{
+      background-color: rgb(255, 179, 39);
+    }
+
+    @media (max-width:400px) {
+      .login-container{
+        box-shadow:unset;
+        border:none;
+      }
+    }
+  </style>
+
+    {% if form.errors %}
+        {% for error in form.non_field_errors %}
+            <p class="errornote">
+                {{ error }}
+            </p>
+      {% endfor %}
+    {% endif %}
+
+  <form action="{{ app_path }}" method="post" id="login-form">
+    {% csrf_token %}
+
+    {# Username field #}
+    <div class="form-row">
+      {{ form.username.errors }}
+      <label for="{{ form.username.id_for_label }}">{{ form.username.label }}:</label>
+      {{ form.username }}
+    </div>
+
+    {# Password field #}
+    <div class="form-row">
+      {{ form.password.errors }}
+      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}:</label>
+      {{ form.password }}
+    </div>
+
+    {# ✅ 2FA code field (only if the form defines it) #}
+    {% if form.fields.totp_code %}
+      <div class="form-row">
+        {{ form.totp_code.errors }}
+        <label for="{{ form.totp_code.id_for_label }}">{{ form.totp_code.label }}:</label>
+        {{ form.totp_code }}
+      </div>
+    {% endif %}
+
+    <div class="submit-row">
+      <input type="submit" value="{% trans 'Log in' %}">
+    </div>
+  </form>
+  <script>
+    document.getElementById('id_password').placeholder  = "passowrd"
+  </script>
+</div>
+{% endblock %}

@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/blogs/', include("posts.urls"), name='blog_list'),
     path('api/auth/', include("accounts.urls"), name='auth_user'),
     path('api/invoices/', include("invoices.urls"), name='invoice_list'),
-    path('ckeditor/', include('ckeditor_uploader.urls'),name="multi_auth"),
+    path('summernote/', include('django_summernote.urls')),
 ]
 # Serve static and media files during development
 if settings.DEBUG:

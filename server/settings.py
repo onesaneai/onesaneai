@@ -47,8 +47,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'corsheaders',
     'taggit',
-    'ckeditor',
-    'ckeditor_uploader',  # Optional, for uploading images
+    'django_summernote',
     'rest_framework',
     'rest_framework.authtoken',
     # 'two_factor',  # Uncomment if you want to use the full two-factor auth app
@@ -58,14 +57,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # MUST be at the top
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'posts.middleware.APIKeyMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'posts.middleware.APIKeyMiddleware',  # Add this before authentication middleware
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -202,6 +201,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # For collected static files (production)
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Media files (User uploads, e.g., blog featured images)
 MEDIA_URL = '/media/'

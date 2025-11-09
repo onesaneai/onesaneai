@@ -59,11 +59,10 @@ def create_invoice_view(request):
 @user_passes_test(admin_only)
 def preview_invoice_view(request, invoice_number):
     """Preview a specific invoice by its number"""
-    invoice = get_object_or_404(Invoice, invoice_number=invoice_number)
+    invoice = get_object_or_404(Invoice.objects.prefetch_related('items'), invoice_number=invoice_number)
     company = get_object_or_404(CompanyInfo)
-    items = InvoiceItem.objects.filter(invoice=invoice)
     print("Previewing invoice:", invoice)
-    return render(request, "invoices/_preview.html", {"invoice": invoice, "company": company, "items": items})
+    return render(request, "invoices/_preview.html", {"invoice": invoice, "company": company})
 
 @login_required
 @user_passes_test(admin_only)
@@ -92,11 +91,10 @@ def shared_invoice_preview_view(request, invoice_number):
         print("User is authenticated:", request.user)
         return redirect('get_invoice', invoice_number=invoice_number)
 
-    invoice = get_object_or_404(Invoice, invoice_number=invoice_number)
+    invoice = get_object_or_404(Invoice.objects.prefetch_related('items'), invoice_number=invoice_number)
     company = get_object_or_404(CompanyInfo)
-    items = InvoiceItem.objects.filter(invoice=invoice)
     print("Shared previewing invoice:", invoice)
-    return render(request, "invoices/shared_invoice_preview.html", {"invoice": invoice, "company": company, "items": items})
+    return render(request, "invoices/shared_invoice_preview.html", {"invoice": invoice, "company": company})
 
 def send_otp_view(request, invoice_number):
     """Send OTP to client's email for accessing shared invoice"""

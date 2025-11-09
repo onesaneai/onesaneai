@@ -1,10 +1,12 @@
 django
 django-taggit
 Pillow
-django-ckeditor
+django-summernote
 qrcode
 djangorestframework
 django-cors-headers
 requests
 Pillow
 django-jazzmin
+django-mathfilters
+pyotp

@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
 # from ckeditor.fields import RichTextField
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_summernote.fields import SummernoteTextField
 # models.py
 from django.contrib.auth import get_user_model
 
@@ -49,7 +49,7 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=255)
     excerpt = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    content = RichTextUploadingField()
+    content = SummernoteTextField()
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='blog_posts')
     slug = models.SlugField(unique=True, max_length=255)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')

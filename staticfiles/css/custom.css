@@ -1,0 +1,6 @@
+/* Limit logo size on login/logout pages */
+.brand-link img, .login-logo img {
+    max-height: 120px;  /* Adjust as needed */
+    width: auto;
+    border-radius: 50%;
+}

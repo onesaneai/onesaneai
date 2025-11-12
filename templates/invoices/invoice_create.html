@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container py-4">
+  <div class="d-flex bg-primary justify-content-between align-items-center mb-4 rounded p-2 position-sticky border-bottom" style="z-index: 10;top: 0%;">
+    <h2 class="fw-semibold text-white">🧾 Create Invoice</h2>
+    <a href="{% url 'admin:index' %}" class="btn btn-outline-light btn-sm">← Back to Admin</a>
+    <!-- ⚙️ Action Buttons -->
+    <div class="border-0">
+      <div class="d-flex justify-content-end gap-3">
+        <button type="button" class="btn btn-light resetBtn" id="resetBtn">🔄 Reset</button>
+        <button type="button" name="preview" class="btn btn-light previewBtn" id="previewBtn">👁 Preview</button>
+        <button type="submit" name="save" class="btn btn-light save-invoice">💾 Save</button>
+        <button type="button" name="send" class="btn btn-light sendBtn" id="sendBtn">📧 Send to Client</button>
+      </div>
+    </div>
+  </div>
+
+  <form method="POST" id="invoiceForm" action="/api/invoices/create/">
+    {% csrf_token %}
+
+    <!-- 🧠 Invoice Details -->
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-header bg-light fw-bold">Invoice Details</div>
+      <div class="card-body row g-3">
+        {% for field in form.visible_fields %}
+        <div class="col-md-6">
+          <label class="form-label">{{ field.label }}</label>
+          {% if field.label == "Client" %}
+          <div class="d-flex align-items-center">
+            {{ field }}
+            <a target="_blank" href="/admin/invoices/client/add/?_to_field=id&_popup=1" target="_blank"
+              class="btn btn-sm btn-outline-secondary ms-2 col-md-2">+ Add Client</a>
+          </div>
+          {% else %}
+            {{ field }}
+          {% endif %}
+
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 💼 Services Section -->
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-header bg-light p-3 fw-bold d-flex justify-content-between align-items-center">
+        <span>Services / Line Items</span>
+        <button type="button" class="btn btn-sm btn-outline-primary" id="add-item">+ Add Service</button>
+      </div>
+
+      <div class="card-body">
+        {{ formset.management_form }}
+        <div id="invoice-items" class="row gy-3 bg-light border m-1 rounded p-3">
+          {% for form in formset %}
+          <div class="col-12 item position-relative">
+            <div class="row align-items-end">
+              {% for field in form.visible_fields %}
+              <div class="mx-auto {% if forloop.counter == 6 %}col-md-1{% else %}col-md-2{% endif %}">
+                <label class="form-label small">{{ field.label }}</label>
+                {{ field }}
+              </div>
+              {% endfor %}
+              <div class="col-md-1 mx-auto">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-item mt-4">✖</button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ⚙️ Action Buttons -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body d-flex justify-content-end gap-3">
+        <button type="button" class="btn btn-outline-warning resetBtn" id="resetBtn">🔄 Reset</button>
+        <button type="button" name="preview" class="btn btn-info text-white previewBtn" id="previewBtn">👁 Preview</button>
+        <button type="submit" name="save" class="btn btn-success save-invoice">💾 Save</button>
+        <button type="button" name="send" class="btn btn-primary sendBtn" id="sendBtn">📧 Send to Client</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<!-- ================= PREVIEW MODAL ================= -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Invoice Preview</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="previewContent">
+        <div class="text-center text-muted py-5">Loading preview...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SEND TO CLIENT MODAL ================= -->
+<div class="modal fade" id="sendModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Send Invoice to Client</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="clientEmail" class="form-label">Client Email</label>
+          <input type="email" id="clientEmail" class="form-control" placeholder="client@example.com" required>
+        </div>
+        <div class="mb-3">
+          <label for="emailMessage" class="form-label">Message</label>
+          <textarea id="emailMessage" class="form-control" rows="3"
+            placeholder="Optional message to client..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="confirmSend">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= RESET CONFIRMATION ================= -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center py-4">
+        <p class="fw-semibold mb-3">Are you sure you want to reset the invoice?</p>
+        <button class="btn btn-outline-danger me-2" id="confirmReset">Yes</button>
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const formsetDiv = document.getElementById("invoice-items");
+    const totalForms = document.querySelector("#id_items-TOTAL_FORMS");
+
+    // Add new item
+    document.getElementById("add-item").addEventListener("click", () => {
+      const newIndex = totalForms.value;
+      const emptyFormHtml = formsetDiv.children[0].outerHTML.replace(/items-\d+/g, `items-${newIndex}`);
+      formsetDiv.insertAdjacentHTML("beforeend", emptyFormHtml);
+      totalForms.value = parseInt(newIndex) + 1;
+    });
+
+    // Remove item
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("remove-item")) e.target.closest(".item").remove();
+    });
+
+    // Preview logic
+    document.querySelectorAll(".previewBtn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        console.log("Generating preview...");
+        const formData = new FormData(document.getElementById("invoiceForm"));
+        formData.append("preview", "true");
+        const response = await fetch("", {
+          method: "POST",
+          body: formData
+        });
+        const html = await response.text();
+        document.getElementById("previewContent").innerHTML = html;
+        new bootstrap.Modal(document.getElementById("previewModal")).show();
+      });
+    });
+
+    // Send modal open
+    document.querySelectorAll(".sendBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const clientSelect = document.getElementById("id_client");
+        const selectedOption = clientSelect.options[clientSelect.selectedIndex];
+        const clientEmail = selectedOption.getAttribute("data-email") || "";
+        document.getElementById("clientEmail").value = clientEmail;
+        new bootstrap.Modal(document.getElementById("sendModal")).show();
+      });
+    });
+
+    // Confirm send (placeholder)
+    document.getElementById("confirmSend").addEventListener("click", () => {
+      alert("Invoice sent successfully (email logic to be added).");
+      bootstrap.Modal.getInstance(document.getElementById("sendModal")).hide();
+    });
+
+    // Reset confirmation
+    document.querySelectorAll(".resetBtn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        new bootstrap.Modal(document.getElementById("resetModal")).show();
+      });
+    });
+
+    document.getElementById("confirmReset").addEventListener("click", () => {
+      document.getElementById("invoiceForm").reset();
+      bootstrap.Modal.getInstance(document.getElementById("resetModal")).hide();
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ invoice.client.company_name }} Invoice ({{ invoice.client.client_name }})</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .invoice-header {
+            padding: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #d6d6d6;
+        }
+        .invoice-title {
+            font-size: 40px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .invoice-meta {
+            text-align: right;
+            font-size: 13px;
+        }
+        .invoice-meta strong{
+            color: #666;
+        }
+        .invoice-info {
+            font-weight: bold;
+            color: #666;
+        }
+        .company-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .logo-icon {
+            width:35px; 
+        }
+        .company-details div {
+            color: #333;
+            font-size: 14px;
+        }
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .billed-section {
+            padding: 30px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .info-block h6 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .info-block div {
+            margin: 3px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        .table-container {
+            padding: 0 30px;
+        }
+        .invoice-table {
+            margin-bottom: 0;
+        }
+        .invoice-table thead {
+            background-color: #f8f9fa;
+            border-top: 2px solid #dee2e6;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .invoice-table thead th {
+            font-weight:600;
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 15px;
+            color: #333;
+        }
+        .invoice-table tbody td {
+            padding: 15px;
+            font-size: 13px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .invoice-table tbody tr:last-child td {
+            border-bottom: 2px solid #dee2e6;
+        }
+        .footer-section {
+            padding: 30px;
+        }
+        .payment-note {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .contact-note {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .totals-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .total-label {
+            margin-right: 50px;
+            color: #666;
+            font-weight: 400;
+            font-size: 13px;
+        }
+        .total-amount {
+            width: 100px;
+            text-align: right;
+            font-weight: 500;
+        }
+        .amount-due-row {
+            background: linear-gradient(135deg, #00adfc 0%, #0054fd 70%);
+            color: white;
+            padding: 15px 30px;
+            margin: 0 -30px;
+            display: flex;
+            /* justify-content: flex-end; */
+            align-items: center;
+            margin-top: 10px;
+        }
+        .amount-due-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 50px;
+        }
+        .amount-due-value {
+            font-size: 24px;
+            font-weight: bold;
+            width: 100px;
+            text-align: right;
+        }
+
+        .bank-details{
+            font-size: 14px;
+            color: #676767;
+        } 
+        .bank-details p{
+            margin: 2px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .invoice-container {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% load mathfilters %}
+    <!-- If user is authenticated (i.e., OTP verified), show invoice; else show email/OTP form -->
+    {% if request.user.is_authenticated %}
+    <div class="position-fixed top-0 end-0 p-3 d-flex flex-column gap-2 buttons-box">
+
+        <a href="/api/invoices/{{ invoice.invoice_number }}/preview/shared/logout/"
+            class="py-1 px-4 btn btn-outline-dark">╰➤ Logout</a>
+        <a role="button" onclick="printInvoiceNote()" class="py-1 px-4 mt-10 btn btn-outline-dark printbtn">🖨️ Print
+        </a>
+        <a role="button" onclick="downloadInvoice()" class="py-1 px-4 mt-10 btn btn-outline-dark">⬇️ Download </a>
+    </div>
+    <!-- main invoice container -->
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <h1 class="invoice-title"><img src="{{company.logo.url}}" alt="Company Logo" class="logo-icon">
+                    INVOICE</h1>
+                <div class="invoice-meta">
+                    <div><strong>INVOICE NO: </strong>{{ invoice.invoice_number }}</div>
+                    <div><strong>INVOICE DATE: </strong>{{ invoice.invoice_date }}</div>
+                    <div><strong>DUE DATE: </strong>{{ invoice.due_date }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company & Billing Info -->
+        <div class="billed-section">
+            <div class="info-row">
+                <div class="info-block">
+                    <div class="company-info">
+                        <div>
+                            <div class="company-name">{{ company.name }}</div>
+                            <div class="company-details">
+                                <div>Address:
+                                    <pre
+                                        style="font-size: 14px;display: inline; word-spacing: 0px;white-space: pre-line;font-family: inherit;padding: 0px;margin: 0px;"> {{ company.address }}</pre>
+                                </div>
+                                <div>Phone: {{ company.phone }}</div>
+                                <div>Email: {{ company.email }}</div>
+                                <div>Website: {{ company.website }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <h6>Billed To</h6>
+                    <div>{{ invoice.client.company_name }}</div>
+                    <div>Name: {{ invoice.client.client_name }}</div>
+                    <div>( {{ invoice.client.client_profession }})</div>
+                    <div>Address:
+                        <pre
+                            style="font-size: 14px; display: inline; word-spacing: 0px;white-space: pre-line;font-family: inherit;padding: 0px;margin: 0px;"> {{ invoice.client.address }}</pre>
+                    </div>
+                    <div>Phone: {{ invoice.client.phone }}</div>
+                    <div>Email: {{ invoice.client.email }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Items Table -->
+        <div class="table-container">
+            <table class="table invoice-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">ITEM NO.</th>
+                        <th style="width: 40%;">PRODUCT/SERVICE</th>
+                        <th style="width: 15%;">QUANTITY</th>
+                        <th style="width: 17%;">UNIT PRICE</th>
+                        <th style="width: 17%;">Tax</th>
+                        <th style="width: 17%;">Discount</th>
+                        <th style="width: 18%;" class="text-end">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in invoice.items.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit_price }}</td>
+                        <td>{{ item.tax_rate }}%</td>
+                        <td>{{ item.discount }}</td>
+                        <td>{{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer with Totals -->
+        <div class="footer-section mb-0 pb-0">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="payment-note"><strong>{{invoice.internal_notes}}</strong></p>
+                    <p class="contact-note">
+                        If you have any questions about this invoice<br>
+                        please contact us using the below details.<br>
+                        {{ company.phone }} | {{ company.email }}
+                    </p>
+                    <p class="contact-note w-75">
+                        {{invoice.notes}}
+                    </p>
+                    <div class="bank-details">
+                        <h6 class="">Bank Details</h6>
+                        <div class="row">
+                            <div class="col">
+                                <p>Bank: {{company.bank_name}}</p>
+                            </div>
+                            <div class="col">
+                                <p>Name: {{company.account_name}}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <p>Acc. No: {{company.account_number}}</p>
+                            </div>
+                            <div class="col">
+                                <p>UPI: {{company.upi_id}}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <p>IFSC: {{company.ifsc_code}}</p>
+                            </div>
+
+                            <div class="col">
+                                <p>PayPal: {{company.paypal_id}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <span class="total-label">SUBTOTAL</span>
+                            <span class="total-amount">{{ invoice.subtotal }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">DISCOUNT </span>
+                            <span class="total-amount">{{ invoice.discount }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Additional Charges</span>
+                            <span class="total-amount">{{ invoice.additional_charges }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">TAX({{ invoice.tax }}%) </span>
+                            <span class="total-amount">
+                                {% with subtotal_after_discount=invoice.subtotal|add:invoice.additional_charges|sub:invoice.discount %}
+                                {{ subtotal_after_discount|mul:invoice.tax|div:100 }}
+                                {% endwith %}
+                            </span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Total </span>
+                            <span class="total-amount">{{ invoice.total }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Paid Amount</span>
+                            <span class="total-amount">{{ invoice.amount_paid }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex amount-due-row">
+                <div class="me-auto">
+                    <a type="button" role="button" class="btn btn-outline-light {% if invoice.balance_due <= 0 %} d-none {% endif %} paynow-btn disabled">Pay Now 💳</a>
+                </div>
+                <div>
+                    <span class="amount-due-label">AMOUNT DUE</span>
+                    <span class="amount-due-value">{{ invoice.balance_due }}</span>
+                </div>
+            </div>
+        </div>
+        <p class="contact-note p-2">{{invoice.public_message}}</p>
+    </div>
+
+    {% else %}
+    <div class="container d-flex flex-column min-vh-100 justify-content-center">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-5">
+                <div id="email-form-section">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3 text-center">Client Login</h4>
+                            <form method="post" id="email-form" action="/api/invoices/{{ invoice.invoice_number }}/preview/shared/send-otp/">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="client_email" class="form-label">Enter your email (as received in
+                                        invoice mail):</label>
+                                    <input type="email" class="form-control" id="client_email" name="email" required
+                                        placeholder="Email address">
+                                </div>
+                                <button id="sendOtpBtn" class="btn btn-primary mx-auto" type="submit">
+                                    <span class="spinner-border spinner-border-sm d-none" role="status"
+                                        aria-hidden="true"></span>
+                                    <span class="sharing-text sendotptext" id="sendotptext">Send OTP</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="otp-form-section" style="display:none;">
+                    <div class="card shadow-sm mt-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3 text-center">OTP Verification</h4>
+                            <form method="post" id="otp-form" action="/api/invoices/{{ invoice.invoice_number }}/preview/shared/verify-otp/">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="otp-input" class="form-label">Enter OTP sent to your email:</label>
+                                    <input type="text" class="form-control" id="otp-input" name="otp" maxlength="6"
+                                        required>
+                                </div>
+                                <button id="verifyBtn" class="btn btn-success me-2" type="submit">
+                                    <span class="spinner-border spinner-border-sm d-none" role="status"
+                                        aria-hidden="true"></span>
+                                    <span class="sharing-text verifytext">Verify</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+    <script>
+        /* Helper: get CSRF token from cookie (Django-style) */
+        function getCookie(name) {
+            const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return v ? v.pop() : '';
+        }
+
+        /* Utility: safely toggle spinner/text */
+        function setButtonLoading(btn, { loading }) {
+            if (!btn) return;
+            const spinner = btn.querySelector('.spinner-border');
+            const sendText = btn.querySelector('.sendotptext, .verifytext');
+            if (loading) {
+                if (spinner) spinner.classList.remove('d-none');
+                if (sendText) sendText.textContent = sendText.dataset.loadingText ?? 'Loading...';
+                btn.disabled = true;
+            } else {
+                if (spinner) spinner.classList.add('d-none');
+                if (sendText) sendText.textContent = sendText.dataset.defaultText ?? 'Submit';
+                btn.disabled = false;
+            }
+        }
+
+        /* Email -> send OTP */
+        document.getElementById("email-form").addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const sendBtn = document.getElementById('sendOtpBtn');
+            const emailInput = document.getElementById('client_email');
+            const emailSection = document.getElementById('email-form-section');
+            const otpSection = document.getElementById('otp-form-section');
+
+            setButtonLoading(sendBtn, { loading: true });
+            await new Promise(r => setTimeout(r, 3000)); // artificial delay for UX
+            try {
+                const url = form.action; // ensure <form action="/your-endpoint/">
+                const payload = { email: emailInput.value };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',                 // send cookies for CSRF
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || '{{ csrf_token }}' // fallback to template if present
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    // try to extract error message if JSON, otherwise throw generic
+                    let text;
+                    try { text = await response.text(); } catch (e) { /* ignore */ }
+                    throw new Error(`Server returned ${response.status}: ${text || response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('send OTP response:', data);
+
+                // Example expected structure: { success: true, message: "...", email: "..." }
+                if (data.success) {
+                    // disable the email inputs so user can't re-send immediately
+                    // If emailSection is a container, set disabled on form controls inside it:
+                    emailSection.querySelectorAll('input, button, select, textarea').forEach(el => el.disabled = true);
+                    // show OTP section
+                    if (otpSection) otpSection.style.display = 'block';
+                    // optionally focus OTP input
+                    const otpInput = document.getElementById('otp-input');
+                    if (otpInput) otpInput.focus();
+                } else {
+                    alert(data.message || 'Failed to send OTP. Please try again.');
+                }
+            } catch (err) {
+                console.error('Error sending OTP:', err);
+                alert(err.message || 'There was an error sending OTP. Please try again.');
+            } finally {
+                setButtonLoading(sendBtn, { loading: false });
+            }
+        });
+
+
+        /* OTP verification */
+        document.getElementById("otp-form").addEventListener('submit',async (e)=> {
+            e.preventDefault();
+            const form = e.target;
+            const verifyBtn = document.getElementById('verifyBtn');
+            setButtonLoading(verifyBtn, { loading: true });
+            await new Promise(r => setTimeout(r, 3000)); // artificial delay for UX
+            try {
+                const url = form.action; // ensure <form action="/verify-otp/">
+                const otpInput = document.getElementById('otp-input');
+                const emailInput = document.getElementById('client_email'); // re-use email input (if still on page)
+                const payload = {
+                    otp: otpInput ? otpInput.value : '',
+                    email: emailInput ? emailInput.value : undefined
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    let bodyText;
+                    try { bodyText = await response.text(); } catch (e) { /* ignore */ }
+                    throw new Error(`Server returned ${response.status}: ${bodyText || response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('verify OTP response:', data);
+
+                if (data.success) {
+                    // Verified — do whatever you need (reload, redirect, show invoice, etc.)
+                    // If you want to reload to show invoice:
+                    window.location.reload();
+                    // or: window.location.href = data.next || '/invoices/';
+                } else {
+                    alert(data.message || 'Invalid OTP. Please try again.');
+                }
+
+            } catch (err) {
+                console.error('Error verifying OTP:', err);
+                alert(err.message || 'There was an error verifying OTP. Please try again.');
+            } finally {
+                setButtonLoading(verifyBtn, { loading: false });
+            }
+
+        });
+
+        function printInvoiceNote() {
+            document.querySelector('.buttons-box').classList.add('d-none')
+            document.querySelector('.paynow-btn').classList.add('d-none')
+            let originaltitle = window.document.title
+            window.print()
+            document.title = originaltitle
+            document.querySelector('.buttons-box').classList.remove('d-none')
+            document.querySelector('.paynow-btn').classList.remove('d-none')
+        }
+
+        async function downloadInvoice() {
+            let element = document.querySelector(".invoice-container");
+            document.querySelector(".paynow-btn").classList.add("d-none");
+            await html2pdf().from(element).save(document.title);
+            document.querySelector(".paynow-btn").classList.remove("d-none");
+        }
+       
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+django
+django-taggit
+Pillow
+django-summernote
+bleach==5.0.1
+qrcode
+djangorestframework
+django-cors-headers
+requests
+Pillow
+django-jazzmin
+django-mathfilters
+pyotp
